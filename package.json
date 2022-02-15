@@ -1,0 +1,26 @@
+{
+  "name": "webgl-html",
+  "version": "1.0.0",
+  "description": "Merging WebGL and HTML worlds course",
+  "source": "src/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel",
+    "browserslist": "> 0.5%, last 2 versions, not dead"
+  },
+  "keywords": [
+    "webgl",
+    "threejs"
+  ],
+  "author": "Arden de Raaij",
+  "license": "ISC",
+  "dependencies": {
+    "glsl-noise": "0.0.0",
+    "glslify": "^7.1.1",
+    "three": "^0.137.5"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.3.1",
+    "parcel": "^2.3.1"
+  }
+}
