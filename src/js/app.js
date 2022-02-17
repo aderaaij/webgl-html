@@ -2,7 +2,7 @@ import * as THREE from "three";
 import frag from "../shaders/shader.frag";
 import vert from "../shaders/shader.vert";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
+import tokyo01 from "../img/tokyo-01.jpg";
 export default class Sketch {
   constructor(options) {
     this.time = 0;
@@ -18,7 +18,7 @@ export default class Sketch {
       70,
       this.width / this.height,
       0.01,
-      10
+      50
     );
 
     this.camera.position.z = 1;
@@ -53,26 +53,35 @@ export default class Sketch {
   }
 
   addObjects() {
-    this.geometry = new THREE.PlaneGeometry(0.5, 0.5, 50, 50);
+    this.geometry = new THREE.PlaneGeometry(1, 1, 100, 100);
+    this.geometry = new THREE.SphereGeometry(0.5, 32, 32);
+
     this.material = new THREE.MeshNormalMaterial();
+
     this.material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
       fragmentShader: this.fragmentShader,
       vertexShader: this.vertexShader,
       uniforms: {
         uTime: { value: this.time },
+        uImageTexture: { value: new THREE.TextureLoader().load(tokyo01) },
       },
-      wireframe: true,
+      wireframe: false,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+    this.texture = new THREE.TextureLoader().load(tokyo01, (tex) => {
+      tex.needsUpdate = true;
+      // this.mesh.scale.set(1.0, tex.image.height / tex.image.width, 1.0);
+    });
+    // this.mesh.rotation.x = Math.PI / 2 * 0.5;
     this.scene.add(this.mesh);
   }
 
   render() {
-    this.time += 0.01;
-    this.mesh.rotation.x = this.time / 2000;
-    this.mesh.rotation.y = this.time / 1000;
+    this.time += 0.05;
+    // this.mesh.rotation.x = this.time / 2000;
+    // this.mesh.rotation.y = this.time / 1000;
     this.material.uniforms.uTime.value = this.time;
 
     window.requestAnimationFrame(this.render.bind(this));
