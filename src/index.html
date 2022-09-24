@@ -1,26 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-    canvas {
-      display: block;
-    }
-    .container {
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
-</head>
-<body>
-  <div class="container"></div>
-  <script type="module" src="js/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/main.scss" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&family=Road+Rage&family=Train+One&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="page-wrapper">
+      <div data-scroll>
+        <div class="hero">
+          <h1 class="page-title">東京</h1>
+        </div>
+
+        <div class="grid">
+          <div class="grid-item grid-item--v1">
+            <img src="img/tokyo-002.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v2">
+            <img src="img/tokyo-003.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v3">
+            <!-- <img src="img/tokyo-004.jpg" alt=""> -->
+            <div class="text-item text-item--align-right">
+              <h3 class="text-item__title">新宿区</h3>
+              <div class="text-item__copy">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Possimus doloribus, eligendi iusto enim ullam molestias fugit
+                mollitia reprehenderit beatae illum odit atque. Voluptatem,
+                aliquid pariatur modi dignissimos nisi ad corporis?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="grid-item grid-item--v4">
+            <img src="img/tokyo-004.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v5">
+            <img src="img/tokyo-005.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v6">
+            <img src="img/tokyo-006.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v7">
+            <div class="text-item">
+              <h3 class="text-item__title">渋谷区</h3>
+              <div class="text-item__copy">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Possimus doloribus, eligendi iusto enim ullam molestias fugit
+                mollitia reprehenderit beatae illum odit atque. Voluptatem,
+                aliquid pariatur modi dignissimos nisi ad corporis?
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="grid-item grid-item--v1">
+            <img src="img/tokyo-009.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v2">
+            <img src="img/tokyo-010.jpg" alt="" />
+          </div>
+          <div class="grid-item grid-item--v3">
+            <!-- <img src="img/tokyo-004.jpg" alt=""> -->
+            <div class="text-item text-item--align-right">
+              <h3 class="text-item__title">六本木</h3>
+              <div class="text-item__copy">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Possimus doloribus, eligendi iusto enim ullam molestias fugit
+                mollitia reprehenderit beatae illum odit atque. Voluptatem,
+                aliquid pariatur modi dignissimos nisi ad corporis?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="webgl"></div>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
