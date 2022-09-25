@@ -15,12 +15,16 @@
   "author": "Arden de Raaij",
   "license": "ISC",
   "dependencies": {
+    "fontfaceobserver": "^2.3.0",
     "glsl-noise": "0.0.0",
     "glslify": "^7.1.1",
+    "gsap": "^3.11.1",
+    "imagesloaded": "^5.0.0",
     "three": "^0.144.0"
   },
   "devDependencies": {
     "@parcel/transformer-glsl": "^2.7.0",
+    "@parcel/transformer-sass": "^2.7.0",
     "parcel": "^2.7.0"
   }
 }
