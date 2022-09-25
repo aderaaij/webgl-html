@@ -209,7 +209,7 @@ export default class Sketch {
 
     this.imageStore = this.images.map((img) => {
       const bounds = img.getBoundingClientRect();
-      const geometry = new THREE.PlaneBufferGeometry(
+      const geometry = new THREE.PlaneGeometry(
         bounds.width,
         bounds.height,
         100,
