@@ -54,7 +54,7 @@ export default class Sketch {
 
   addObjects() {
     this.geometry = new THREE.PlaneGeometry(1, 1, 100, 100);
-    this.geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    // this.geometry = new THREE.SphereGeometry(0.5, 32, 32);
 
     this.material = new THREE.MeshNormalMaterial();
 
@@ -72,7 +72,7 @@ export default class Sketch {
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.texture = new THREE.TextureLoader().load(tokyo01, (tex) => {
       tex.needsUpdate = true;
-      // this.mesh.scale.set(1.0, tex.image.height / tex.image.width, 1.0);
+      this.mesh.scale.set(1.0, tex.image.height / tex.image.width, 1.0);
     });
     // this.mesh.rotation.x = Math.PI / 2 * 0.5;
     this.scene.add(this.mesh);
