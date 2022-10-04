@@ -1,18 +1,25 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import GUI from "lil-gui";
-
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 
-import { MSDFTextGeometry, MSDFTextMaterial, uniforms } from "three-msdf-text";
+import GUI from "lil-gui";
+import { animate } from "motion";
+import { MSDFTextGeometry, uniforms } from "three-msdf-text";
 
+// Shaders
 import frag from "../shaders/shader.frag";
 import vert from "../shaders/shader.vert";
+import lettersFrag from "../shaders/letters/shader.frag";
+import lettersVert from "../shaders/letters/shader.vert";
 
+// Assets
 import tokyo01 from "../img/tokyo-01.jpg";
+
 import LatoBoldFnt from "../assets/Lato-Bold-msdf/Lato-Bold-msdf.fnt";
 import LatoBoldPng from "../assets/Lato-Bold-msdf/Lato-Bold.png";
+
+import DinBoldFnt from "../assets/Din-Bold-msdf/DIN-Bold-msdf.fnt";
+import DinBoldPng from "../assets/Din-Bold-msdf/DIN-Bold.png";
 
 export default class Sketch {
   constructor(options) {
@@ -34,16 +41,16 @@ export default class Sketch {
       70,
       this.width / this.height,
       0.01,
-      50
+      100
     );
 
-    this.camera.position.z = -2;
+    this.camera.position.z = 2;
 
     // Set renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(this.width, this.height);
-    this.renderer.setClearColor(0xeeeeee, 1);
+    this.renderer.setClearColor(0x111111, 1);
     this.renderer.physicallyCorrectLights = true;
     this.renderer.outputEncoding = THREE.sRGBEncoding;
 
@@ -51,22 +58,52 @@ export default class Sketch {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // Call setup functions
+    this.addText();
+    this.addObjects();
     this.resize();
     this.settings();
     this.setupResize();
-    this.addObjects();
     this.render();
   }
 
   settings() {
-    let that = this;
     this.settings = {
-      progress: 0,
+      progress01: 0,
+      progress02: 0,
+      progress03: 0,
+      progress04: 0,
+      trigger: () => {
+        for (let i = 0; i < 4; i++) {
+          animate(
+            (progress) => {
+              this.letterMaterial.uniforms[`uProgressText0${i + 1}`].value =
+                progress;
+            },
+            {
+              duration: 0.3 * i + 1.5,
+              delay: 0.2 * i,
+              easing: [0.5, 1, 0.89, 1],
+            }
+          );
+        }
+      },
     };
 
-    this.gui.add(this.settings, "progress", 0, 1, 0.01).onChange(() => {
+    this.gui.add(this.settings, "progress01", 0, 1, 0.01).onChange((val) => {
       this.material.uniforms.uProgress.value = this.settings.progress;
-    }); // Checkbox
+      this.letterMaterial.uniforms.uProgressText01.value = val;
+    });
+    this.gui.add(this.settings, "progress02", 0, 1, 0.01).onChange((val) => {
+      this.letterMaterial.uniforms.uProgressText02.value = val;
+    });
+    this.gui.add(this.settings, "progress03", 0, 1, 0.01).onChange((val) => {
+      this.letterMaterial.uniforms.uProgressText03.value = val;
+    });
+    this.gui.add(this.settings, "progress04", 0, 1, 0.01).onChange((val) => {
+      this.letterMaterial.uniforms.uProgressText04.value = val;
+    });
+
+    this.gui.add(this.settings, "trigger");
   }
 
   setupResize() {
@@ -83,9 +120,6 @@ export default class Sketch {
 
   addObjects() {
     this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1);
-
-    // this.material = new THREE.MeshNormalMaterial();
-
     this.material = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
       fragmentShader: this.fragmentShader,
@@ -93,99 +127,82 @@ export default class Sketch {
       uniforms: {
         uTime: { value: this.time },
         uProgress: { value: 0 },
-        // uImageTexture: { value: new THREE.TextureLoader().load(tokyo01) },
+        uImageTexture: { value: new THREE.TextureLoader().load(tokyo01) },
       },
       wireframe: false,
     });
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
 
-    // this.texture = new THREE.TextureLoader().load(tokyo01, (tex) => {
-    //   tex.needsUpdate = true;
-    //   this.mesh.scale.set(1.0, tex.image.height / tex.image.width, 1.0);
-    // });
-    // this.mesh.rotation.x = (Math.PI / 2) * 0.5;
-    this.scene.add(this.mesh);
+    this.texture = new THREE.TextureLoader().load(tokyo01, (tex) => {
+      tex.needsUpdate = true;
+      this.mesh.scale.set(1.0, tex.image.height / tex.image.width, 1.0);
+    });
+    this.mesh.rotation.x = (Math.PI / 2) * 0.5;
+    // this.scene.add(this.mesh);
+  }
 
-    Promise.all([loadFontAtlas(LatoBoldPng), loadFont(LatoBoldFnt)]).then(
-      ([atlas, font]) => {
-        console.log(font.data);
-        const geometry = new MSDFTextGeometry({
-          text: "GET WRECKED",
-          font: font.data,
-          align: "center",
-          flipY: true,
-          mode: "pre",
-        });
+  async addText() {
+    this.letterMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+      },
+    });
 
-        geometry;
-        // const material = new MSDFTextMaterial({ side: THREE.DoubleSide });
-        const material = new THREE.ShaderMaterial({
-          side: THREE.doubleSide,
-          transparent: true,
-          defines: {
-            IS_SMALL: false,
-          },
-          extensions: {
-            derivatives: true,
-          },
-          uniforms: {
-            // Common
-            ...uniforms.common,
+    const [atlas, font] = await Promise.all([
+      loadFontAtlas(DinBoldPng),
+      loadFont(DinBoldFnt),
+    ]);
 
-            // Rendering
-            ...uniforms.rendering,
+    const geometry = new MSDFTextGeometry({
+      text: "HIGH TECH\nTEXT REVEAL",
+      font: font.data,
+      flipY: true,
+      mode: "pre",
+    });
+    geometry.computeBoundingBox();
 
-            // Strokes
-            ...uniforms.strokes,
-          },
-          vertexShader: `
-              // Attribute
-              #include <three_msdf_attributes>
-      
-              // Varyings
-              #include <three_msdf_varyings>
-      
-              void main() {
-                  #include <three_msdf_vertex>
-              }
-          `,
-          fragmentShader: `
-              // Varyings
-              #include <three_msdf_varyings>
-      
-              // Uniforms
-              #include <three_msdf_common_uniforms>
-              #include <three_msdf_strokes_uniforms>
-      
-              // Utils
-              #include <three_msdf_median>
-      
-              void main() {
-                  // Common
-                  #include <three_msdf_common>
-      
-                  // Strokes
-                  #include <three_msdf_strokes>
-      
-                  // Alpha Test
-                  #include <three_msdf_alpha_test>
-      
-                  // Outputs
-                  #include <three_msdf_strokes_output>
-                  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-              }
-          `,
-        });
-        material.uniforms.uMap.value = atlas;
-        const mesh = new THREE.Mesh(geometry, material);
+    const ratio =
+      geometry.boundingBox.max.x /
+      (geometry.boundingBox.max.y + geometry.boundingBox.min.y * -1);
 
-        this.scene.add(mesh);
-        mesh.scale.x *= -0.01;
-        mesh.scale.y *= -0.01;
-        mesh.position.x = 1.2;
-      }
-    );
+    this.letterMaterial = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      transparent: true,
+      defines: {
+        IS_SMALL: false,
+      },
+      extensions: {
+        derivatives: true,
+      },
+      uniforms: {
+        // Common
+        ...uniforms.common,
+        // Rendering
+        ...uniforms.rendering,
+
+        // Strokes
+        ...uniforms.strokes,
+        uProgressText01: { value: 0 },
+        uProgressText02: { value: 0 },
+        uProgressText03: { value: 0 },
+        uProgressText04: { value: 0 },
+        uStrokeColor: { value: new THREE.Color(0x00ff00) },
+        uTime: { value: 0 },
+        uRatio: { value: 0 },
+      },
+      vertexShader: lettersVert,
+      fragmentShader: lettersFrag,
+    });
+
+    this.letterMaterial.uniforms.uMap.value = atlas;
+    this.letterMaterial.uniforms.uRatio.value = ratio;
+
+    const mesh = new THREE.Mesh(geometry, this.letterMaterial);
+    mesh.applyMatrix4(new THREE.Matrix4().makeScale(0.01 * 1, -0.01, 0.01));
+
+    this.scene.add(mesh);
+    mesh.position.x = -1.5;
 
     function loadFontAtlas(path) {
       const promise = new Promise((resolve, reject) => {
@@ -211,6 +228,8 @@ export default class Sketch {
     // this.mesh.rotation.x = this.time / 2000;
     // this.mesh.rotation.y = this.time / 1000;
     this.material.uniforms.uTime.value = this.time;
+
+    this.letterMaterial.uniforms.uTime.value = this.time;
 
     window.requestAnimationFrame(this.render.bind(this));
     this.renderer.render(this.scene, this.camera);
