@@ -25,9 +25,8 @@ export default class Sketch {
   constructor(options) {
     this.scene = new THREE.Scene();
     this.gui = new GUI();
-
+    this.gui.open(false);
     this.time = 0;
-
     this.textRatio = 0;
 
     this.container = options.dom;
@@ -46,6 +45,10 @@ export default class Sketch {
       100
     );
 
+    setTimeout(() => {
+      this.triggerAnimation();
+    }, 300);
+
     this.textGeometry = null;
 
     this.camera.position.z = 2;
@@ -57,6 +60,10 @@ export default class Sketch {
     this.renderer.setClearColor(0x111111, 1);
     this.renderer.physicallyCorrectLights = true;
     this.renderer.outputEncoding = THREE.sRGBEncoding;
+
+    this.container.addEventListener("click", () => {
+      this.triggerAnimation();
+    });
 
     this.container.appendChild(this.renderer.domElement);
     // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -72,6 +79,22 @@ export default class Sketch {
     this.render();
   }
 
+  triggerAnimation() {
+    for (let i = 0; i < 4; i++) {
+      animate(
+        (progress) => {
+          this.letterMaterial.uniforms[`uProgressText0${i + 1}`].value =
+            progress;
+        },
+        {
+          duration: 0.3 * i + 1,
+          delay: 0.25 * i,
+          easing: [0.5, 1, 0.89, 1],
+        }
+      );
+    }
+  }
+
   settings() {
     this.settings = {
       progress01: 0,
@@ -79,19 +102,7 @@ export default class Sketch {
       progress03: 0,
       progress04: 0,
       trigger: () => {
-        for (let i = 0; i < 4; i++) {
-          animate(
-            (progress) => {
-              this.letterMaterial.uniforms[`uProgressText0${i + 1}`].value =
-                progress;
-            },
-            {
-              duration: 0.3 * i + 1,
-              delay: 0.25 * i,
-              easing: [0.5, 1, 0.89, 1],
-            }
-          );
-        }
+        this.triggerAnimation();
       },
     };
 
