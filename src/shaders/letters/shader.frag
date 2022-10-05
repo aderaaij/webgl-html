@@ -5,6 +5,13 @@ uniform float uProgressText01;
 uniform float uProgressText02;
 uniform float uProgressText03;
 uniform float uProgressText04;
+
+uniform vec3 uLayerColor01;
+uniform vec3 uLayerColor02;
+uniform vec3 uLayerColor03;
+uniform vec3 uLayerColor04;
+
+
 uniform float uRatio;
 
 #include <three_msdf_varyings>
@@ -69,16 +76,16 @@ void main() {
   #include <three_msdf_strokes_output>
   vec3 magenta = vec3(0.925,0.,0.549);
   
-  vec4 borderMagenta = vec4(magenta, border);
-  vec4 borderFull = vec4(vec3(.9),border * 1.);
-  vec4 bgMagenta = vec4(magenta,1.);
-  vec4 bgWhite = vec4(vec3(1.),1.);
+  vec4 LayerColor01 = vec4(vec3(uLayerColor01), border);
+  vec4 LayerColor02 = vec4(vec3(uLayerColor02),border * 1.);
+  vec4 LayerColor03 = vec4(uLayerColor03,1.);
+  vec4 LayerColor04 = vec4(vec3(uLayerColor04),1.);
 
 
-  vec4 layer_01 = mix(vec4(0.), borderMagenta, 1. -mixes[0]);
-  vec4 layer_02 = mix(layer_01, borderFull, 1. -mixes[1]);
-  vec4 layer_03 = mix(layer_02, bgMagenta, 1. -mixes[2]);
-  vec4 layer_04 = mix(layer_03, bgWhite, 1. -mixes[3]);
+  vec4 layer_01 = mix(vec4(0.), LayerColor01, 1. -mixes[0]);
+  vec4 layer_02 = mix(layer_01, LayerColor02, 1. -mixes[1]);
+  vec4 layer_03 = mix(layer_02, LayerColor03, 1. -mixes[2]);
+  vec4 layer_04 = mix(layer_03, LayerColor04, 1. -mixes[3]);
   
 
   gl_FragColor = layer_04;
