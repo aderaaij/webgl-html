@@ -18,8 +18,8 @@ import tokyo01 from "../img/tokyo-01.jpg";
 import LatoBoldFnt from "../assets/Lato-Bold-msdf/Lato-Bold-msdf.fnt";
 import LatoBoldPng from "../assets/Lato-Bold-msdf/Lato-Bold.png";
 
-import DinBoldFnt from "../assets/Din-Bold-msdf/DIN-Bold-msdf.fnt";
-import DinBoldPng from "../assets/Din-Bold-msdf/DIN-Bold.png";
+import DinBoldFnt from "../assets/Din-Bold-msdf/Din-Bold-msdf.fnt";
+import DinBoldPng from "../assets/Din-Bold-msdf/Din-Bold.png";
 
 export default class Sketch {
   constructor(options) {
@@ -27,6 +27,8 @@ export default class Sketch {
     this.gui = new GUI();
 
     this.time = 0;
+
+    this.textRatio = 0;
 
     this.container = options.dom;
     this.fragmentShader = options.fragmentShader;
@@ -44,6 +46,8 @@ export default class Sketch {
       100
     );
 
+    this.textGeometry = null;
+
     this.camera.position.z = 2;
 
     // Set renderer
@@ -55,14 +59,16 @@ export default class Sketch {
     this.renderer.outputEncoding = THREE.sRGBEncoding;
 
     this.container.appendChild(this.renderer.domElement);
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     // Call setup functions
     this.addText();
     this.addObjects();
+
+    this.setupResize();
     this.resize();
     this.settings();
-    this.setupResize();
+
     this.render();
   }
 
@@ -80,8 +86,8 @@ export default class Sketch {
                 progress;
             },
             {
-              duration: 0.3 * i + 1.5,
-              delay: 0.2 * i,
+              duration: 0.3 * i + 1,
+              delay: 0.25 * i,
               easing: [0.5, 1, 0.89, 1],
             }
           );
@@ -116,6 +122,12 @@ export default class Sketch {
     this.renderer.setSize(this.width, this.height);
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
+    if (this.textGeometry) {
+      this.textRatio =
+        this.textGeometry.boundingBox.max.x /
+        (this.textGeometry.boundingBox.max.y +
+          this.textGeometry.boundingBox.min.y * -1);
+    }
   }
 
   addObjects() {
@@ -154,17 +166,18 @@ export default class Sketch {
       loadFont(DinBoldFnt),
     ]);
 
-    const geometry = new MSDFTextGeometry({
+    this.textGeometry = new MSDFTextGeometry({
       text: "HIGH TECH\nTEXT REVEAL",
       font: font.data,
       flipY: true,
       mode: "pre",
     });
-    geometry.computeBoundingBox();
+    this.textGeometry.computeBoundingBox();
 
-    const ratio =
-      geometry.boundingBox.max.x /
-      (geometry.boundingBox.max.y + geometry.boundingBox.min.y * -1);
+    this.textRatio =
+      this.textGeometry.boundingBox.max.x /
+      (this.textGeometry.boundingBox.max.y +
+        this.textGeometry.boundingBox.min.y * -1);
 
     this.letterMaterial = new THREE.ShaderMaterial({
       side: THREE.DoubleSide,
@@ -196,9 +209,9 @@ export default class Sketch {
     });
 
     this.letterMaterial.uniforms.uMap.value = atlas;
-    this.letterMaterial.uniforms.uRatio.value = ratio;
+    this.letterMaterial.uniforms.uRatio.value = this.textRatio;
 
-    const mesh = new THREE.Mesh(geometry, this.letterMaterial);
+    const mesh = new THREE.Mesh(this.textGeometry, this.letterMaterial);
     mesh.applyMatrix4(new THREE.Matrix4().makeScale(0.01 * 1, -0.01, 0.01));
 
     this.scene.add(mesh);
