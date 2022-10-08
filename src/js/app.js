@@ -45,10 +45,6 @@ export default class Sketch {
       100
     );
 
-    setTimeout(() => {
-      this.triggerAnimation();
-    }, 300);
-
     this.textGeometry = null;
 
     this.camera.position.z = 2;
@@ -68,7 +64,6 @@ export default class Sketch {
     this.container.appendChild(this.renderer.domElement);
     // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-    // Call setup functions
     this.addText();
     this.addObjects();
 
@@ -77,6 +72,10 @@ export default class Sketch {
     this.settings();
 
     this.render();
+
+    setTimeout(() => {
+      this.triggerAnimation();
+    }, 300);
   }
 
   triggerAnimation() {
